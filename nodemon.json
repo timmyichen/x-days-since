@@ -1,0 +1,6 @@
+{
+  "ignore": ["server/scripts"],
+  "watch": ["server"],
+  "ext": "js,ts",
+  "exec": "npx ts-node -r tsconfig-paths/register --transpile-only ./server/index.ts"
+}
