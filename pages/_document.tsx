@@ -1,11 +1,8 @@
-import Head from 'next/head'
-import React from 'react'
+import { Html, Head, Main, NextScript } from 'next/document'
 
-import '@/client/styles.css'
-
-function MyApp({ Component, pageProps }) {
+export default function Document() {
   return (
-    <>
+    <Html>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <link
@@ -13,9 +10,10 @@ function MyApp({ Component, pageProps }) {
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
       </Head>
-      <Component {...pageProps} />
-    </>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
   )
 }
-
-export default MyApp

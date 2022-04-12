@@ -9,4 +9,5 @@ export interface Page extends Document {
   description: string;
   uuid: string;
   events: Array<Event>;
+  key: string;
 }

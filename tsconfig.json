@@ -73,6 +73,8 @@
   },
   "include": [
     "./server/**/*",
+    "./client/**/*",
+    "./pages/**/*",
   ],
   "exclude": [
     "node_modules"
