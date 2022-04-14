@@ -6,8 +6,8 @@ export interface Event {
 
 export interface Page extends Document {
   created: Date;
-  description: string;
+  name: string;
   uuid: string;
   events: Array<Event>;
-  key: string;
+  key?: string;
 }

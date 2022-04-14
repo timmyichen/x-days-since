@@ -2,5 +2,5 @@
   "ignore": ["server/scripts"],
   "watch": ["server"],
   "ext": "js,ts",
-  "exec": "NODE_ENV=development npx ts-node -r tsconfig-paths/register --transpile-only ./server/index.ts"
+  "exec": "npx ts-node -r tsconfig-paths/register --transpile-only ./server/index.ts"
 }

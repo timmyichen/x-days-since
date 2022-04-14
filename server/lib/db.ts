@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb"
-import { Page } from "@/server/types/models";
+import { Page } from "@/shared/models";
 import { log } from "./log";
 
 if (!process.env.MONGO_URI) {
