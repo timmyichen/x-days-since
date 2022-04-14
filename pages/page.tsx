@@ -2,6 +2,7 @@ import { ssrAxiosConfig } from '@/client/lib/axiosConfig';
 import { getDaysDifference } from '@/client/lib/date';
 import { GetPageResponse } from '@/shared/http';
 import { Page } from '@/shared/models';
+import { Maybe } from '@/shared/types';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
 import axios from 'axios';
@@ -17,7 +18,7 @@ const Heading = styled.h1`
 `
 
 interface Props {
-  page?: Page,
+  page?: Maybe<Page>,
   error?: string;
 }
 
