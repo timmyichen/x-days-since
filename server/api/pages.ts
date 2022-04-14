@@ -1,4 +1,4 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse } from '@/shared/http'
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, TriggerEventResponse } from '@/shared/http'
 import express, { RequestHandler } from 'express'
 import { BadRequestError, NotFoundError } from 'express-response-errors';
 import { v4 as uuidv4, validate as validateUuid } from 'uuid';
@@ -37,7 +37,7 @@ const getPage: RequestHandler<{ uuid: string }, GetPageResponse> = async (req, r
   res.json({ page })
 }
 
-const triggerEvent: RequestHandler<{ uuid: string }> = async (req, res) => {
+const triggerEvent: RequestHandler<{ uuid: string }, TriggerEventResponse> = async (req, res) => {
   const uuid = req.params.uuid
 
   if (!uuid || !validateUuid(uuid)) {
@@ -53,7 +53,7 @@ const triggerEvent: RequestHandler<{ uuid: string }> = async (req, res) => {
     { $push: { events: event } }
   )
 
-  res.send()
+  res.send({ event })
 }
 
 pagesRouter.post('/', createPage)

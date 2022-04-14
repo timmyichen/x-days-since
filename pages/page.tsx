@@ -1,7 +1,7 @@
 import { ssrAxiosConfig } from '@/client/lib/axiosConfig';
 import { getDaysDifference } from '@/client/lib/date';
-import { GetPageResponse } from '@/shared/http';
-import { Page } from '@/shared/models';
+import { GetPageResponse, TriggerEventResponse } from '@/shared/http';
+import { Event, Page } from '@/shared/models';
 import { Maybe } from '@/shared/types';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
@@ -25,7 +25,8 @@ interface Props {
 
 const Page: NextPage<Props> = ({ page, error }) => {
   const [loading, setLoading] = React.useState(false)
-  console.log(page)
+  const [events, setEvents] = React.useState<Event[]>(page?.events || [])
+  console.log(page, events)
 
   if (!page) {
     return <div>page not found</div>
@@ -35,12 +36,13 @@ const Page: NextPage<Props> = ({ page, error }) => {
     return <div>{error}</div>
   }
 
-  const lastEvent = page.events.length ? page.events[page.events.length - 1].date : page.created
+  const lastEvent = events.length ? events[events.length - 1].date : page.created
   const days = getDaysDifference(new Date(lastEvent), new Date())
 
   const onTriggerEvent = async () => {
     setLoading(true)
-    await axios.post(`/api/pages/${page.uuid}/event`)
+    const res = await axios.post<TriggerEventResponse>(`/api/pages/${page.uuid}/event`)
+    setEvents([...events, res.data.event])
     setLoading(false)
   }
 

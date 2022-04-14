@@ -1,4 +1,4 @@
-import { Page } from "./models";
+import { Event, Page } from "./models";
 import { Maybe } from "./types";
 
 export interface CreatePageRequest {
@@ -11,4 +11,8 @@ export interface CreatePageResponse {
 
 export interface GetPageResponse {
   page: Maybe<Page>;
+}
+
+export interface TriggerEventResponse {
+  event: Event;
 }
