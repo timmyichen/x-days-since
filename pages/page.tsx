@@ -6,6 +6,7 @@ import { Maybe } from '@/shared/types';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
 import axios from 'axios';
+import { Request } from 'express';
 import { NextPage } from 'next';
 import React from 'react';
 
@@ -64,7 +65,7 @@ Page.getInitialProps = async (ctx) => {
     return {}
   }
   
-  const config = ctx.req ? ssrAxiosConfig : {}
+  const config = ctx.req ? ssrAxiosConfig(ctx.req as Request) : {}
 
   let res;
   try {
