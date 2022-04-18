@@ -3,8 +3,11 @@ import React from 'react'
 import { AppProps } from 'next/app'
 
 import '@/client/styles.css'
+import Header from '@/client/components/Header'
+import { PageContextProvider } from '@/client/contexts/page'
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { page, ...rest } = pageProps;
   return (
     <>
       <Head>
@@ -14,7 +17,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
       </Head>
-      <Component {...pageProps} />
+      <PageContextProvider page={page}>
+        <Header />
+        <Component {...rest} />
+      </PageContextProvider>
     </>
   )
 }
