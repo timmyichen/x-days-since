@@ -1,4 +1,4 @@
-import { ClientPage, Event } from "./models";
+import { ClientPage, DateFormat, Event } from "./models";
 import { RememberOptions } from "./time";
 import { Maybe } from "./types";
 
@@ -33,4 +33,12 @@ export interface SubmitPasswordRequest {
 
 export interface SubmitPasswordResponse {
   token: string;
+}
+
+export interface UpdatePageRequest {
+  dateFormat: DateFormat;
+}
+
+export interface UpdatePageResponse {
+  page: ClientPage;
 }

@@ -1,4 +1,4 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventResponse } from '@/shared/http'
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
 import express, { RequestHandler } from 'express'
 import { BadRequestError, ForbiddenError } from 'express-response-errors';
 import * as bcrypt from 'bcrypt'
@@ -10,7 +10,7 @@ import { hashPassword } from '@/server/lib/auth';
 import { sanitizePage } from '../lib/sanitize';
 
 const pagesRouter = express.Router()
-const DEFAULT_DATE_FORMAT = DateFormat.FULL_DAYS
+const DEFAULT_DATE_FORMAT = DateFormat.FULL_MINUTES
 
 const createPage: RequestHandler<unknown, CreatePageResponse, CreatePageRequest> = async (req, res) => {
   const name = req.body.name;
@@ -99,7 +99,24 @@ const submitPassword: RequestHandler<unknown, SubmitPasswordResponse, SubmitPass
     throw new BadRequestError('Incorrect password')
   }
 
+  // do a thing
+}
+
+const updatePage: RequestHandler<unknown, UpdatePageResponse, UpdatePageRequest> = async (req, res) => {
+  const page = req.page!
+  const { dateFormat } = req.body
+
+  if (!(dateFormat in DateFormat)) {
+    throw new BadRequestError('Invalid date format')
+  }
+
+  const updated = await getPages().findOneAndUpdate(
+    { uuid: page.uuid },
+    { $set: { 'settings.dateFormat': dateFormat } },
+    { returnDocument: 'after' }
+  )
   
+  res.json({ page: sanitizePage(updated.value!) })
 }
 
 pagesRouter.post('/', withPage(false), createPage)
@@ -107,5 +124,6 @@ pagesRouter.get('/:uuid', withPage(true), getPage)
 pagesRouter.post('/:uuid/event', withPage(true), triggerEvent)
 pagesRouter.post('/:uuid/password', withPage(true), setPassword)
 pagesRouter.post('/:uuid/auth', withPage(true), submitPassword)
+pagesRouter.post('/:uuid/settings', withPage(true), updatePage)
 
 export default pagesRouter

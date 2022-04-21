@@ -3,10 +3,9 @@ export interface Event {
 }
 
 export enum DateFormat {
-  DAYS_ONLY = "days_only",
-  FULL_DAYS = "full_days",
-  FULL_MINUTES = "full_minutes",
-  FULL_SECONDS = "full_seconds",
+  DAYS_ONLY = "DAYS_ONLY", // X days
+  FULL_MINUTES = "FULL_MINUTES", // full_days + M hours, N minutes
+  FULL_SECONDS = "FULL_SECONDS", // full_minutes + O seconds
 }
 
 export interface Settings {

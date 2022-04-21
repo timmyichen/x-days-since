@@ -1,5 +1,8 @@
 import AuthenticationAccordion from '@/client/components/accordions/authentication';
+import SettingsAccordion from '@/client/components/accordions/settings';
+import TimeAgo from '@/client/components/TimeAgo';
 import { usePageDispatch, usePageState } from '@/client/contexts/page';
+import useTimeAgo from '@/client/hooks/useTimeAgo';
 import { ssrAxiosConfig } from '@/client/lib/axiosConfig';
 import { getDaysDifference } from '@/client/lib/date';
 import { GetPageResponse, TriggerEventResponse } from '@/shared/http';
@@ -26,7 +29,6 @@ interface Props {
 const Page: NextPage<Props> = ({ error }) => {
   const pageState = usePageState()
   const pageDispatch = usePageDispatch()
-  console.log('state', pageState)
   const [loading, setLoading] = React.useState(false)
 
   const page = pageState.pages[pageState.currentPage || ""]
@@ -41,7 +43,6 @@ const Page: NextPage<Props> = ({ error }) => {
 
   const { events, uuid, created } = page;
   const lastEvent = events.length ? events[events.length - 1].date : created
-  const days = getDaysDifference(new Date(lastEvent), new Date())
 
   const onTriggerEvent = async () => {
     setLoading(true)
@@ -52,7 +53,11 @@ const Page: NextPage<Props> = ({ error }) => {
 
   return (
     <Wrapper>
-      <Heading>It's been {days} {days === 1 ? 'day' : 'days'} since {page.name}</Heading>
+      <Heading>
+        It's been&nbsp;
+        <TimeAgo timestamp={lastEvent} dateFormat={page.meta.dateFormat} />
+        &nbsp;since {page.name}
+      </Heading>
       <Button
         type="submit"
         variant="contained"
@@ -63,6 +68,7 @@ const Page: NextPage<Props> = ({ error }) => {
         {page.name} today
       </Button>
       <AuthenticationAccordion hasPassword={page.meta.hasPassword} />
+      <SettingsAccordion />
     </Wrapper>
   )
 }
