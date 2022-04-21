@@ -1,3 +1,4 @@
+import AuthenticationAccordion from '@/client/components/accordions/authentication';
 import { usePageDispatch, usePageState } from '@/client/contexts/page';
 import { ssrAxiosConfig } from '@/client/lib/axiosConfig';
 import { getDaysDifference } from '@/client/lib/date';
@@ -19,24 +20,23 @@ const Heading = styled.h1`
 `
 
 interface Props {
-  pageUuid?: Maybe<string>,
   error?: string;
 }
 
-const Page: NextPage<Props> = ({ pageUuid, error }) => {
+const Page: NextPage<Props> = ({ error }) => {
   const pageState = usePageState()
   const pageDispatch = usePageDispatch()
   console.log('state', pageState)
   const [loading, setLoading] = React.useState(false)
 
-  const page = pageState[pageUuid || ""]
+  const page = pageState.pages[pageState.currentPage || ""]
 
   if (!page) {
-    return <div>page not found</div>
+    return <Wrapper>page not found</Wrapper>
   }
 
   if (error) {
-    return <div>{error}</div>
+    return <Wrapper>{error}</Wrapper>
   }
 
   const { events, uuid, created } = page;
@@ -62,6 +62,7 @@ const Page: NextPage<Props> = ({ pageUuid, error }) => {
       >
         {page.name} today
       </Button>
+      <AuthenticationAccordion hasPassword={page.meta.hasPassword} />
     </Wrapper>
   )
 }

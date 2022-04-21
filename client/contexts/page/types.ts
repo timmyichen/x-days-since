@@ -2,7 +2,10 @@ import React from 'react'
 import { ClientPage, Event } from "@/shared/models";
 
 export interface PageState {
-  [uuid: string]: ClientPage;
+  pages: {
+    [uuid: string]: ClientPage;
+  };
+  currentPage?: string;
 }
 
 export type PageAction =
@@ -14,6 +17,10 @@ export type PageAction =
   type: 'ADD_EVENT';
   uuid: string;
   event: Event;
+}
+| {
+  type: 'SET_CURRENT_PAGE';
+  uuid: string;
 }
 
 export type PageReducer = React.Reducer<PageState, PageAction>

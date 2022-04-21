@@ -6,14 +6,18 @@ export const reducer: PageReducer = (state, action) => {
   switch(action.type) {
     case 'SET_PAGE':
       return produce(state, draft => {
-        draft[action.page.uuid] = action.page;
+        draft.pages[action.page.uuid] = action.page
       })
     case 'ADD_EVENT':
       return produce(state, draft => {
-        if (!draft[action.uuid]) {
+        if (!draft.pages[action.uuid]) {
           return
         }
-        draft[action.uuid].events.push(action.event)
+        draft.pages[action.uuid].events.push(action.event)
+      })
+    case 'SET_CURRENT_PAGE':
+      return produce(state, draft => {
+        draft.currentPage = action.uuid
       })
     default:
       return state
