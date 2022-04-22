@@ -1,15 +1,17 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
-import express, { RequestHandler } from 'express'
-import { BadRequestError, ForbiddenError } from 'express-response-errors';
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SetPasswordResponse, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
+import { RequestHandler } from 'express'
+import { AsyncRouter } from 'express-async-router'
+import { BadRequestError } from 'express-response-errors';
 import * as bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
 import { getPages } from '@/server/lib/db';
 import { DateFormat } from '@/shared/models';
-import { withPage } from '@/server/middleware/withPage';
-import { hashPassword } from '@/server/lib/auth';
+import { withPage, withPassword } from '@/server/middleware/withPage';
+import { generatePageAuthToken, hashPassword } from '@/server/lib/auth';
 import { sanitizePage } from '../lib/sanitize';
+import { RememberOptions } from '@/shared/time';
 
-const pagesRouter = express.Router()
+const pagesRouter = AsyncRouter()
 const DEFAULT_DATE_FORMAT = DateFormat.FULL_MINUTES
 
 const createPage: RequestHandler<unknown, CreatePageResponse, CreatePageRequest> = async (req, res) => {
@@ -59,7 +61,7 @@ const triggerEvent: RequestHandler<unknown, TriggerEventResponse> = async (req, 
   res.send({ event })
 }
 
-const setPassword: RequestHandler<unknown, void, SetPasswordRequest> = async (req, res) => {
+const setPassword: RequestHandler<unknown, SetPasswordResponse, SetPasswordRequest> = async (req, res) => {
   const page = req.page!
   const { password } = req.body
 
@@ -73,20 +75,25 @@ const setPassword: RequestHandler<unknown, void, SetPasswordRequest> = async (re
 
   const hashedPassword = await hashPassword(password)
 
-  await getPages().updateOne(
+  const updated = await getPages().findOneAndUpdate(
     { uuid: page.uuid },
-    { $set: { 'settings.password': hashedPassword } }
+    { $set: { 'settings.password': hashedPassword } },
+    { returnDocument: 'after' }
   )
 
-  res.send()
+  res.send({ page: sanitizePage(updated.value!) })
 }
 
 const submitPassword: RequestHandler<unknown, SubmitPasswordResponse, SubmitPasswordRequest> = async (req, res) => {
   const page = req.page!
-  const { password } = req.body
+  const { password, remember } = req.body
 
   if (!password) {
     throw new BadRequestError('A password is required')
+  }
+
+  if (!(remember in RememberOptions)) {
+    throw new BadRequestError('Invalid remember time period')
   }
 
   if (!page.settings.password) {
@@ -99,7 +106,8 @@ const submitPassword: RequestHandler<unknown, SubmitPasswordResponse, SubmitPass
     throw new BadRequestError('Incorrect password')
   }
 
-  // do a thing
+  const token = generatePageAuthToken({ uuid: page.uuid, remember })
+  res.json({ token })
 }
 
 const updatePage: RequestHandler<unknown, UpdatePageResponse, UpdatePageRequest> = async (req, res) => {
@@ -121,9 +129,9 @@ const updatePage: RequestHandler<unknown, UpdatePageResponse, UpdatePageRequest>
 
 pagesRouter.post('/', withPage(false), createPage)
 pagesRouter.get('/:uuid', withPage(true), getPage)
-pagesRouter.post('/:uuid/event', withPage(true), triggerEvent)
+pagesRouter.post('/:uuid/event', withPage(true), withPassword, triggerEvent)
 pagesRouter.post('/:uuid/password', withPage(true), setPassword)
 pagesRouter.post('/:uuid/auth', withPage(true), submitPassword)
-pagesRouter.post('/:uuid/settings', withPage(true), updatePage)
+pagesRouter.post('/:uuid/settings', withPage(true), withPassword, updatePage)
 
 export default pagesRouter

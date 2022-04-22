@@ -2,11 +2,9 @@ import AuthenticationAccordion from '@/client/components/accordions/authenticati
 import SettingsAccordion from '@/client/components/accordions/settings';
 import TimeAgo from '@/client/components/TimeAgo';
 import { usePageDispatch, usePageState } from '@/client/contexts/page';
-import useTimeAgo from '@/client/hooks/useTimeAgo';
 import { ssrAxiosConfig } from '@/client/lib/axiosConfig';
-import { getDaysDifference } from '@/client/lib/date';
 import { GetPageResponse, TriggerEventResponse } from '@/shared/http';
-import { Maybe } from '@/shared/types';
+import { DateFormat } from '@/shared/models';
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
 import axios from 'axios';
@@ -19,7 +17,11 @@ const Wrapper = styled.div`
 `
 
 const Heading = styled.h1`
-  font-size: 28px;
+  font-size: 2rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 interface Props {
@@ -51,6 +53,17 @@ const Page: NextPage<Props> = ({ error }) => {
     setLoading(false)
   }
 
+  const getButtonText = () => {
+    switch (page.meta.dateFormat) {
+      case DateFormat.FULL_MINUTES:
+      case DateFormat.FULL_SECONDS:
+        return `${page.name} just now`
+      case DateFormat.DAYS_ONLY:
+      default:
+        return `${page.name} today`
+    }
+  }
+
   return (
     <Wrapper>
       <Heading>
@@ -65,7 +78,7 @@ const Page: NextPage<Props> = ({ error }) => {
         onClick={onTriggerEvent}
         sx={{ fontSize: '18px', marginTop: '24px' }}
       >
-        {page.name} today
+        {getButtonText()}
       </Button>
       <AuthenticationAccordion hasPassword={page.meta.hasPassword} />
       <SettingsAccordion />

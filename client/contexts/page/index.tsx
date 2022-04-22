@@ -3,7 +3,10 @@ import React from 'react'
 import { reducer } from './reducer'
 import { PageDispatch, PageReducer, PageState } from './types'
 
-const defaultState: PageState = { pages: {} }
+const defaultState: PageState = {
+  pages: {},
+  auths: {},
+}
 
 export const PageStateContext = React.createContext<PageState>(defaultState)
 export const PageDispatchContext = React.createContext<PageDispatch>({} as PageDispatch)
@@ -17,8 +20,24 @@ interface Props {
 export const PageContextProvider: React.FC<Props> = ({ children, page, pageUuid }) => {
   const [state, dispatch] = React.useReducer<PageReducer>(
     reducer,
-    page ? { pages: { [page.uuid]: page }, currentPage: pageUuid } : defaultState
+    page ? {
+      ...defaultState,
+      pages: { [page.uuid]: page },
+      currentPage: pageUuid
+    } : defaultState
   )
+
+  React.useEffect(() => {
+    if (page) {
+      dispatch({ type: 'SET_PAGE', page })
+    }
+  }, [page])
+
+  React.useEffect(() => {
+    if (pageUuid) {
+      dispatch({ type: 'SET_CURRENT_PAGE', uuid: pageUuid })
+    }
+  }, [pageUuid])
 
   return (
     <PageStateContext.Provider value={state}>

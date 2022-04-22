@@ -8,7 +8,7 @@ if (!process.env.PASSWORD_SECRET) {
 }
 
 const rememberOptionToJwtExpiry: { [r in RememberOptions]: string | undefined } = {
-  [RememberOptions.FOREVER]: undefined,
+  [RememberOptions.FOREVER]: "1 second",
   [RememberOptions.ONE_DAY]: "1 day",
   [RememberOptions.ONE_MONTH]: "30 days",
   [RememberOptions.ONE_WEEK]: "1 week",
@@ -27,7 +27,7 @@ export function generatePageAuthToken({ uuid, remember }: { uuid: string, rememb
   return jwt.sign(
     { uuid },
     process.env.PASSWORD_SECRET!,
-    { algorithm: "RS256", expiresIn }
+    { algorithm: "HS256", expiresIn }
   )
 }
 

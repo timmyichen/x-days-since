@@ -1,8 +1,9 @@
 import { UuidParam } from "@/shared/http"
 import { RequestHandler } from "express"
-import { BadRequestError, NotFoundError } from "express-response-errors"
+import { BadRequestError, NotFoundError, UnauthorizedError } from "express-response-errors"
 import { validate as validate } from 'uuid';
 import { getPages } from "@/server/lib/db";
+import { verifyPageAuthToken } from "../lib/auth";
 
 export const withPage = (required = true): RequestHandler<UuidParam> => async (req, res, next) => {
   const { uuid } = req.params
@@ -22,6 +23,26 @@ export const withPage = (required = true): RequestHandler<UuidParam> => async (r
   }
 
   req.page = page || undefined;
+
+  next()
+}
+
+export const withPassword: RequestHandler<UuidParam> = async (req, res, next) => {
+  const page = req.page!
+
+  if (page.settings.password) {
+    const token = req.headers.authorization?.replace('Bearer ', '')
+
+    if (!token) {
+      throw new UnauthorizedError('Missing password')
+    }
+
+    const validPassword = verifyPageAuthToken({ expectedUuid: page.uuid, token })
+
+    if (!validPassword) {
+      throw new UnauthorizedError('Incorrect password')
+    }
+  }
 
   next()
 }

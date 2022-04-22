@@ -44,10 +44,6 @@ function msToTimeAgo(format: DateFormat, ms: number) {
 function timeAgoToString(values: number[]) {
   const parts: string[] = []
 
-  if (values.length === 1) {
-    return `${values[0]} ${plural(values[0], 'day')}`
-  }
-
   let started = false
   values.forEach((value, i) => {
     if (value === 0 && !started) {
@@ -57,14 +53,20 @@ function timeAgoToString(values: number[]) {
   })
 
   if (parts.length === 0) {
-    return '0 seconds'
+    const lastIndex = values.length - 1
+    return `${values[lastIndex]} ${plural(values[lastIndex], labelOrder[lastIndex])}`
   }
 
   if (parts.length === 1) {
     return parts[0]
   }
 
-  return [...parts.slice(0, parts.length - 1), `and ${parts[parts.length - 1]}`].join(', ')
+  const str = [...parts.slice(0, parts.length - 1), `and ${parts[parts.length - 1]}`].join(', ')
+  if (parts.length === 2) {
+    return str.replace(',', '')
+  }
+
+  return str
 }
 
 const useTimeAgo = (interval: DateFormat, timestamp: number) => {

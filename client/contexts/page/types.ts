@@ -5,6 +5,9 @@ export interface PageState {
   pages: {
     [uuid: string]: ClientPage;
   };
+  auths: {
+    [uuid: string]: number | null;
+  };
   currentPage?: string;
 }
 
@@ -20,6 +23,15 @@ export type PageAction =
 }
 | {
   type: 'SET_CURRENT_PAGE';
+  uuid: string;
+}
+| {
+  type: 'AUTH_PAGE';
+  uuid: string;
+  expiry: number;
+}
+| {
+  type: 'UNAUTH_PAGE';
   uuid: string;
 }
 

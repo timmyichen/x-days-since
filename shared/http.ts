@@ -26,6 +26,10 @@ export interface SetPasswordRequest {
   password: string;
 }
 
+export interface SetPasswordResponse {
+  page: ClientPage;
+}
+
 export interface SubmitPasswordRequest {
   password: string;
   remember: RememberOptions;
