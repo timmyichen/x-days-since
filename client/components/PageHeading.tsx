@@ -16,13 +16,27 @@ const PageHeading: React.FC = () => {
   const { pages, currentPage } = usePageState()
   const page = pages[currentPage!]
   const { events, created } = page
-  const lastEvent = events[0]?.date || created
+  const lastEvent = events[0]?.date
+
+  let content: React.ReactNode = ""
+
+  if (lastEvent) {
+    content = (
+      <>
+        It's been&nbsp;
+        <TimeAgo timestamp={lastEvent} dateFormat={page.meta.dateFormat} />
+        &nbsp;since {page.name}
+      </>
+    )
+  }
+
+  if (!content) {
+    return null
+  }
 
   return (
     <Heading>
-      It's been&nbsp;
-      <TimeAgo timestamp={lastEvent} dateFormat={page.meta.dateFormat} />
-      &nbsp;since {page.name}
+      {content}
     </Heading>
   )
 }

@@ -17,7 +17,7 @@ const NoteWrapper = styled.div`
 `
 
 const EventTrigger: React.FC = () => {
-  const { pages, currentPage } = usePageState()
+  const { pages, currentPage, auths } = usePageState()
   const pageDispatch = usePageDispatch()
   const [loading, setLoading] = React.useState(false)
   const [ hasNote, setHasNote ] = React.useState(false)
@@ -25,6 +25,8 @@ const EventTrigger: React.FC = () => {
 
   const page = pages[currentPage!]
   const { uuid, name, meta } = page
+
+  const disableButton = !!(page.meta.hasPassword && !auths[currentPage!])
 
   const onTriggerEvent = async () => {
     setLoading(true)
@@ -64,7 +66,7 @@ const EventTrigger: React.FC = () => {
       <Button
         type="submit"
         variant="contained"
-        disabled={loading}
+        disabled={disableButton || loading}
         onClick={onTriggerEvent}
         sx={{ fontSize: '18px', marginTop: '24px' }}
       >
