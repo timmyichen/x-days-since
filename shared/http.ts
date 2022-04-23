@@ -18,6 +18,10 @@ export interface TriggerEventResponse {
   event: Event;
 }
 
+export interface TriggerEventRequest {
+  note?: string;
+}
+
 export interface UuidParam {
   uuid: string;
 }

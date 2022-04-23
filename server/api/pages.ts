@@ -1,14 +1,14 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SetPasswordResponse, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SetPasswordResponse, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventRequest, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
 import { RequestHandler } from 'express'
 import { AsyncRouter } from 'express-async-router'
 import { BadRequestError } from 'express-response-errors';
 import * as bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
 import { getPages } from '@/server/lib/db';
-import { DateFormat } from '@/shared/models';
+import { DateFormat, MAX_NOTE_LENGTH } from '@/shared/models';
 import { withPage, withPassword } from '@/server/middleware/withPage';
 import { generatePageAuthToken, hashPassword } from '@/server/lib/auth';
-import { sanitizePage } from '../lib/sanitize';
+import { sanitizePage } from '@/server/lib/sanitize';
 import { RememberOptions } from '@/shared/time';
 
 const pagesRouter = AsyncRouter()
@@ -46,16 +46,22 @@ const getPage: RequestHandler<unknown, GetPageResponse> = (req, res) => {
   res.json({ page: sanitizePage(page) })
 }
 
-const triggerEvent: RequestHandler<unknown, TriggerEventResponse> = async (req, res) => {
+const triggerEvent: RequestHandler<unknown, TriggerEventResponse, TriggerEventRequest> = async (req, res) => {
   const { uuid } = req.page!
+  const { note } = req.body
+
+  if (typeof note !== 'string' || note.length > MAX_NOTE_LENGTH) {
+    throw new BadRequestError('Invalid note or note is too long')
+  }
 
   const event = {
-    date: Date.now()
+    date: Date.now(),
+    note,
   }
   
   await getPages().updateOne(
     { uuid },
-    { $push: { events: event } }
+    { $push: { events: { $each: [event], $position: 0 } } }
   )
 
   res.send({ event })
@@ -67,6 +73,10 @@ const setPassword: RequestHandler<unknown, SetPasswordResponse, SetPasswordReque
 
   if (!password) {
     throw new BadRequestError('A password is required')
+  }
+
+  if (typeof password !== 'string' || password.length > 200) {
+    throw new BadRequestError('Why is your password that way')
   }
 
   if (page.settings.password) {

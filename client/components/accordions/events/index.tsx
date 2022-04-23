@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, NoSsr } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import React from 'react'
 import { usePageState } from '@/client/contexts/page'
@@ -23,7 +23,7 @@ const EventsAccordion: React.FC = () => {
         Previous times when {name}
       </AccordionSummary>
       <AccordionDetails>
-        <EventsTable />
+        <NoSsr><EventsTable /></NoSsr>
       </AccordionDetails>
     </Accordion>
   )

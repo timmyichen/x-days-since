@@ -13,7 +13,7 @@ export const reducer: PageReducer = (state, action) => {
         if (!draft.pages[action.uuid]) {
           return
         }
-        draft.pages[action.uuid].events.push(action.event)
+        draft.pages[action.uuid].events.unshift(action.event)
       })
     case 'SET_CURRENT_PAGE':
       return produce(state, draft => {

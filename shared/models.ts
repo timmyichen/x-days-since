@@ -1,6 +1,9 @@
 export interface Event {
   date: number;
+  note?: string;
 }
+
+export const MAX_NOTE_LENGTH = 500
 
 export enum DateFormat {
   DAYS_ONLY = "DAYS_ONLY", // X days

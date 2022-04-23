@@ -9,7 +9,7 @@ const EventsTable: React.FC = () => {
   const { pages, currentPage } = usePageState()
   const [tablePage, setTablePage] = React.useState(0)
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setTablePage(newPage);
   };
 
@@ -21,15 +21,21 @@ const EventsTable: React.FC = () => {
     <>
       <TableContainer component={Paper}>
         <Table size="small">
+          <colgroup>
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '60%' }} />
+          </colgroup>
           <TableHead>
             <TableRow>
               <TableCell>Date</TableCell>
+              <TableCell>Note</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {events.map(event => (
               <TableRow key={event.date}>
                 <TableCell>{getFormattedDate(event.date, page.meta.dateFormat)}</TableCell>
+                <TableCell>{event.note || ''}</TableCell>
               </TableRow>
             ))}
           </TableBody>
