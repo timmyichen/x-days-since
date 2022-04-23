@@ -1,5 +1,5 @@
 import AuthenticationAccordion from '@/client/components/accordions/authentication';
-import Events from '@/client/components/accordions/events';
+import EventsAccordion from '@/client/components/accordions/events';
 import SettingsAccordion from '@/client/components/accordions/settings';
 import TimeAgo from '@/client/components/TimeAgo';
 import { usePageDispatch, usePageState } from '@/client/contexts/page';
@@ -83,7 +83,7 @@ const Page: NextPage<Props> = ({ error }) => {
       </Button>
       <AuthenticationAccordion hasPassword={page.meta.hasPassword} />
       <SettingsAccordion />
-      <Events />
+      <EventsAccordion />
     </Wrapper>
   )
 }

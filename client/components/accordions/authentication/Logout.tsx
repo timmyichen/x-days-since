@@ -1,4 +1,5 @@
 import { usePageDispatch, usePageState } from '@/client/contexts/page'
+import { getFormattedDate } from '@/client/lib/date'
 import styled from '@emotion/styled'
 import { Button, Typography } from '@mui/material'
 import React from 'react'
@@ -21,8 +22,7 @@ const Logout: React.FC = () => {
   const expiryTs = auths[currentPage!]
   let logoutTime = "at some point, I think"
   if (expiryTs) {
-    const date = new Date(expiryTs)
-    logoutTime = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+    logoutTime = getFormattedDate(expiryTs)
   }
 
   return (

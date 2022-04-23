@@ -1,3 +1,8 @@
 body {
   font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
 }
+
+.MuiAccordion-root.Mui-expanded {
+  margin-bottom: 0px !important;
+  margin-top: 1px !important;
+}
