@@ -19,12 +19,16 @@ const Logout: React.FC = () => {
   }
 
   const expiryTs = auths[currentPage!]
-  const date = expiryTs ? new Date(expiryTs).toTimeString() : 'at some point, maybe'
+  let logoutTime = "at some point, I think"
+  if (expiryTs) {
+    const date = new Date(expiryTs)
+    logoutTime = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+  }
 
   return (
     <>
       <Typography>
-        You'll be logged in until {date}.
+        You'll be logged in until {logoutTime}.
       </Typography>
       <Wrapper>
         <Button onClick={onSubmit}>Log out</Button>

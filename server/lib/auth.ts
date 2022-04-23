@@ -8,7 +8,7 @@ if (!process.env.PASSWORD_SECRET) {
 }
 
 const rememberOptionToJwtExpiry: { [r in RememberOptions]: string | undefined } = {
-  [RememberOptions.FOREVER]: "1 second",
+  [RememberOptions.FOREVER]: "100 years",
   [RememberOptions.ONE_DAY]: "1 day",
   [RememberOptions.ONE_MONTH]: "30 days",
   [RememberOptions.ONE_WEEK]: "1 week",
