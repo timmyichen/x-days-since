@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import axios from 'axios'
 import { Button, TextField, Typography } from '@mui/material'
 import { usePageDispatch, usePageState } from '@/client/contexts/page'
-import { SetPasswordResponse } from '@/shared/http'
+import { ReturnPageResponse } from '@/shared/http'
 
 const PasswordWrapper = styled.div`
   display: flex;
@@ -20,7 +20,7 @@ const CreatePassword: React.FC = () => {
   const onSave = async () => {
     setLoading(true)
     try {
-      const res = await axios.post<SetPasswordResponse>(`/api/pages/${currentPage}/password`, { password })
+      const res = await axios.post<ReturnPageResponse>(`/api/pages/${currentPage}/password`, { password })
       pageDispatch({ type: 'SET_PAGE', page: res.data.page })
     } catch (err) {
       
@@ -32,7 +32,7 @@ const CreatePassword: React.FC = () => {
   const onNoPassword = async () => {
     setLoading(true)
     try {
-      const res = await axios.post<SetPasswordResponse>(`/api/pages/${currentPage}/no-password`, { password })
+      const res = await axios.post<ReturnPageResponse>(`/api/pages/${currentPage}/no-password`, { password })
       pageDispatch({ type: 'SET_PAGE', page: res.data.page })
     } catch (err) {
       
