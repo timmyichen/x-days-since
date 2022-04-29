@@ -8,6 +8,12 @@ import Header from '@/client/components/Header'
 import { PageContextProvider } from '@/client/contexts/page'
 import { SnackContextProvider } from '@/client/contexts/snack'
 import AuthController from '@/client/components/AuthController'
+import styled from '@emotion/styled'
+
+const Wrapper = styled.main`
+  max-width: 640px;
+  margin: 0 auto;
+`
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { page, pageUuid, ...rest } = pageProps;
@@ -25,7 +31,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <PageContextProvider page={page} pageUuid={pageUuid}>
           <AuthController />
           <Header />
-          <Component {...rest} />
+          <Wrapper>
+            <Component {...rest} />
+          </Wrapper>
         </PageContextProvider>
       </SnackContextProvider>
     </>

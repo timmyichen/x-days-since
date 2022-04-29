@@ -1,15 +1,16 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse, ReturnPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventRequest, TriggerEventResponse, UpdatePageRequest } from '@/shared/http'
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, ReturnPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventRequest, TriggerEventResponse, UpdatePageRequest, UuidParam } from '@/shared/http'
 import { RequestHandler } from 'express'
 import { AsyncRouter } from 'express-async-router'
 import { BadRequestError } from 'express-response-errors';
 import * as bcrypt from 'bcrypt'
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate } from 'uuid';
 import { getPages } from '@/server/lib/db';
-import { DateFormat, MAX_NOTE_LENGTH } from '@/shared/models';
+import { DateFormat, MAX_NOTE_LENGTH, Page } from '@/shared/models';
 import { withPage, withPassword } from '@/server/middleware/withPage';
 import { generatePageAuthToken, hashPassword } from '@/server/lib/auth';
 import { sanitizePage } from '@/server/lib/sanitize';
 import { RememberOptions } from '@/shared/time';
+import { Filter } from 'mongodb';
 
 const pagesRouter = AsyncRouter()
 const DEFAULT_DATE_FORMAT = DateFormat.FULL_MINUTES
@@ -36,8 +37,15 @@ const createPage: RequestHandler<unknown, CreatePageResponse, CreatePageRequest>
   res.json({ uuid })
 }
 
-const getPage: RequestHandler<unknown, GetPageResponse> = (req, res) => {
-  const page = req.page
+const getPage: RequestHandler<UuidParam, GetPageResponse> = async (req, res) => {
+  const uuid = req.params.uuid
+
+  let filter: Filter<Page> = { uuid }
+  if (!validate(uuid)) {
+    filter = { slug: uuid }
+  }
+
+  const page = await getPages().findOne(filter)
 
   if (!page) {
     return res.json({ page: null })
@@ -158,7 +166,7 @@ const setNoPassword: RequestHandler<unknown, ReturnPageResponse> = async (req, r
 }
 
 pagesRouter.post('/', withPage(false), createPage)
-pagesRouter.get('/:uuid', withPage(true), getPage)
+pagesRouter.get('/:uuid', getPage)
 pagesRouter.post('/:uuid/event', withPage(true), withPassword, triggerEvent)
 pagesRouter.post('/:uuid/password', withPage(true), setPassword)
 pagesRouter.post('/:uuid/auth', withPage(true), submitPassword)

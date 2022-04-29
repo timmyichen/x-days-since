@@ -22,6 +22,7 @@ export interface Page {
   name: string;
   uuid: string;
   events: Array<Event>;
+  slug?: string;
   settings: Settings;
 }
 

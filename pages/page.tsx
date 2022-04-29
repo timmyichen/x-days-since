@@ -68,7 +68,7 @@ Page.getInitialProps = async (ctx) => {
 
   return {
     page,
-    pageUuid: String(ctx.query.uuid),
+    pageUuid: page?.uuid,
   }
 }
 
