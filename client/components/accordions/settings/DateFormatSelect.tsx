@@ -1,5 +1,5 @@
 import { usePageDispatch, usePageState } from '@/client/contexts/page'
-import { UpdatePageResponse } from '@/shared/http'
+import { ReturnPageResponse } from '@/shared/http'
 import { DateFormat } from '@/shared/models'
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import axios from 'axios'
@@ -19,7 +19,7 @@ const DateFormatSelect: React.FC = () => {
   
   const onChange = async (e: SelectChangeEvent) => {
     setLoading(true)
-    const res = await axios.post<UpdatePageResponse>(`/api/pages/${page.uuid}/settings`, { dateFormat: e.target!.value })
+    const res = await axios.post<ReturnPageResponse>(`/api/pages/${page.uuid}/settings`, { dateFormat: e.target!.value })
     pageDispatch({
       type: 'SET_PAGE',
       page: res.data.page,
