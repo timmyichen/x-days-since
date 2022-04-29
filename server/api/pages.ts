@@ -1,4 +1,4 @@
-import { CreatePageRequest, CreatePageResponse, GetPageResponse, SetPasswordRequest, SetPasswordResponse, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventRequest, TriggerEventResponse, UpdatePageRequest, UpdatePageResponse } from '@/shared/http'
+import { CreatePageRequest, CreatePageResponse, GetPageResponse, ReturnPageResponse, SetPasswordRequest, SubmitPasswordRequest, SubmitPasswordResponse, TriggerEventRequest, TriggerEventResponse, UpdatePageRequest } from '@/shared/http'
 import { RequestHandler } from 'express'
 import { AsyncRouter } from 'express-async-router'
 import { BadRequestError } from 'express-response-errors';
@@ -67,7 +67,7 @@ const triggerEvent: RequestHandler<unknown, TriggerEventResponse, TriggerEventRe
   res.send({ event })
 }
 
-const setPassword: RequestHandler<unknown, SetPasswordResponse, SetPasswordRequest> = async (req, res) => {
+const setPassword: RequestHandler<unknown, ReturnPageResponse, SetPasswordRequest> = async (req, res) => {
   const page = req.page!
   const { password } = req.body
 
@@ -120,7 +120,7 @@ const submitPassword: RequestHandler<unknown, SubmitPasswordResponse, SubmitPass
   res.json({ token })
 }
 
-const updatePage: RequestHandler<unknown, UpdatePageResponse, UpdatePageRequest> = async (req, res) => {
+const updatePage: RequestHandler<unknown, ReturnPageResponse, UpdatePageRequest> = async (req, res) => {
   const page = req.page!
   const { dateFormat } = req.body
 
@@ -137,11 +137,32 @@ const updatePage: RequestHandler<unknown, UpdatePageResponse, UpdatePageRequest>
   res.json({ page: sanitizePage(updated.value!) })
 }
 
+const setNoPassword: RequestHandler<unknown, ReturnPageResponse> = async (req, res) => {
+  const page = req.page!
+
+  if (page.settings.noPassword) {
+    throw new BadRequestError('Page already doesn\'t require a password')
+  }
+
+  if (page.settings.password) {
+    throw new BadRequestError('Page is password protected')
+  }
+
+  const updated = await getPages().findOneAndUpdate(
+    { uuid: page.uuid },
+    { $set: { 'settings.noPassword': true } },
+    { returnDocument: 'after' }
+  )
+
+  res.json({ page: sanitizePage(updated.value!) })
+}
+
 pagesRouter.post('/', withPage(false), createPage)
 pagesRouter.get('/:uuid', withPage(true), getPage)
 pagesRouter.post('/:uuid/event', withPage(true), withPassword, triggerEvent)
 pagesRouter.post('/:uuid/password', withPage(true), setPassword)
 pagesRouter.post('/:uuid/auth', withPage(true), submitPassword)
 pagesRouter.post('/:uuid/settings', withPage(true), withPassword, updatePage)
+pagesRouter.post('/:uuid/no-password', withPage(true), setNoPassword)
 
 export default pagesRouter

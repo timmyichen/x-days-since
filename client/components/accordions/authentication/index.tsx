@@ -11,11 +11,15 @@ interface Props {
 }
 
 const AuthenticationAccordion: React.FC<Props> = ({ hasPassword }) => {
-  const { auths, currentPage } = usePageState();
+  const { auths, currentPage, pages } = usePageState();
   const [expanded, setExpanded] = React.useState(false)
 
   const onToggle = (_event: React.SyntheticEvent, exp: boolean) => {
     setExpanded(exp)
+  }
+
+  if (pages[currentPage!].meta.noPassword) {
+    return null
   }
 
   let content = null

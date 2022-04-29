@@ -30,10 +30,6 @@ export interface SetPasswordRequest {
   password: string;
 }
 
-export interface SetPasswordResponse {
-  page: ClientPage;
-}
-
 export interface SubmitPasswordRequest {
   password: string;
   remember: RememberOptions;
@@ -47,6 +43,6 @@ export interface UpdatePageRequest {
   dateFormat: DateFormat;
 }
 
-export interface UpdatePageResponse {
+export interface ReturnPageResponse {
   page: ClientPage;
 }

@@ -12,6 +12,7 @@ export function sanitizePage(page: WithId<Page>): ClientPage {
     meta: {
       hasPassword: !!page.settings.password,
       dateFormat: page.settings.dateFormat,
+      noPassword: !!page.settings.noPassword,
     },
   }
 }

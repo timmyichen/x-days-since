@@ -15,7 +15,7 @@ const Heading = styled.h1`
 const PageHeading: React.FC = () => {
   const { pages, currentPage } = usePageState()
   const page = pages[currentPage!]
-  const { events, created } = page
+  const { events } = page
   const lastEvent = events[0]?.date
 
   let content: React.ReactNode = ""

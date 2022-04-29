@@ -14,6 +14,7 @@ export enum DateFormat {
 export interface Settings {
   password?: string;
   dateFormat: DateFormat;
+  noPassword?: boolean;
 }
 
 export interface Page {
@@ -28,5 +29,6 @@ export type ClientPage = Pick<Page, 'created' | 'name' | 'uuid' | 'events'> & {
   meta: {
     hasPassword: boolean;
     dateFormat: DateFormat;
+    noPassword: boolean;
   }
 }

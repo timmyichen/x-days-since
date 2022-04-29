@@ -29,6 +29,18 @@ const CreatePassword: React.FC = () => {
     }
   }
 
+  const onNoPassword = async () => {
+    setLoading(true)
+    try {
+      const res = await axios.post<SetPasswordResponse>(`/api/pages/${currentPage}/no-password`, { password })
+      pageDispatch({ type: 'SET_PAGE', page: res.data.page })
+    } catch (err) {
+      
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <>
       <Typography>
@@ -46,6 +58,7 @@ const CreatePassword: React.FC = () => {
         />
         <Button disabled={loading} onClick={onSave}>Save</Button>
       </PasswordWrapper>
+      <Button disabled={loading} onClick={onNoPassword}>I want everyone to have access</Button>
     </>
   )
 }
